@@ -1,0 +1,28 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+    - mysqldata:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  script:
+    depends_on:
+      - adminer
+      - db
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+    - ./:/workspace:shared
+volumes:
+  mysqldata:
