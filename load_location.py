@@ -2,10 +2,10 @@ import logging
 import time
 
 from geopy import geocoders
-from sqlalchemy.orm import sessionmaker
+from rich.progress import track
 from tzwhere import tzwhere
 
-from db import engine
+from main import *
 from models import User
 
 logger = logging.getLogger("LoadLocation")
@@ -28,7 +28,9 @@ def get_coordinates(locl: str):
 
 
 users = session.query(User).filter(User.utc_locale == None, User.location != None).all()
-for user in users:
+
+for index in track(range(len(users)), description="Processing..."):
+    user = users[index]
     logger.info(f"Searching for UTC locale for '{user.login}' from '{user.location}'")
     lat, lgn = get_coordinates(user.location)
     if not lat:
