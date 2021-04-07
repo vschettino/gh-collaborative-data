@@ -3,26 +3,25 @@ version: '3.1'
 services:
 
   db:
-    image: mariadb:10
-    restart: always
+    image: postgres:alpine
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-    - mysqldata:/var/lib/mysql
-  adminer:
-    image: adminer
-    restart: always
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DB: gitrev
     ports:
-      - 8080:8080
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   script:
     depends_on:
-      - adminer
       - db
     build:
       context: .
     env_file:
       - .env
+    environment:
+      DATABASE_ADDRESS="db"
     volumes:
     - ./:/workspace:shared
 volumes:
-  mysqldata:
+  pgdata:

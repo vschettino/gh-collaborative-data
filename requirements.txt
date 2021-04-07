@@ -1,3 +1,7 @@
-mariadb
+psycopg2-binary
 rich
 retry
+PyGithub
+python-dotenv
+sqlalchemy
+alembic
