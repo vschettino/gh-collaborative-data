@@ -30,6 +30,7 @@ class User(BaseModel):
     login = Column(String, unique=True)
     url = Column(String)
     location = Column(String)
+    utc_locale = Column(String)
     created_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)
 

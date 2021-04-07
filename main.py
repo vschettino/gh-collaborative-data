@@ -1,6 +1,5 @@
 import logging
 import sys
-import threading
 from datetime import datetime
 from multiprocessing import Pool
 
@@ -27,7 +26,7 @@ from dump import (
 
 install()
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="[%(name)s] %(message)s",
     datefmt="[%Y-%m-%d %H:%M:%S]",
     handlers=[RichHandler(markup=True, rich_tracebacks=True)],
@@ -56,7 +55,7 @@ def start(projects: list, since: datetime):
     logger.info(f"Start dumping {len(projects)} projects from {since.isoformat()}")
     params = []
     tokens = get_github_tokens()
-    for worker in range(1, len(projects)):
+    for worker in range(len(projects)):
         params.append((projects[worker], since, tokens[worker]))
     with Pool(len(projects)) as p:
         p.map(dump, params)
@@ -108,6 +107,8 @@ def dump(data):
 if __name__ == "__main__":
     start(
         [
+            "tensorflow/tensorflow",
+            "rails/rails",
             "clojure/clojure",
             "astropy/astropy",
             "django/django",

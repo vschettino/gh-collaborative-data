@@ -5,3 +5,5 @@ PyGithub
 python-dotenv
 sqlalchemy
 alembic
+geopy
+tzwhere
