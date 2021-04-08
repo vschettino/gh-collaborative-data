@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import Insert
 from urllib3 import Retry
 
 import models as m
-from auth import get_github_tokens
+from auth import get_next_github_token
 from db import engine
 from dump import (
     get_issues,
@@ -54,9 +54,8 @@ def start(projects: list, since: datetime):
     logger = logging.getLogger("Dump")
     logger.info(f"Start dumping {len(projects)} projects from {since.isoformat()}")
     params = []
-    tokens = get_github_tokens()
     for worker in range(len(projects)):
-        params.append((projects[worker], since, tokens[worker]))
+        params.append((projects[worker], since, get_next_github_token(worker)))
     with Pool(len(projects)) as p:
         p.map(dump, params)
 

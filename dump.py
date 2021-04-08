@@ -53,7 +53,7 @@ def get_pull_requests(repo: Repository, since: datetime) -> list[PullRequest]:
 def get_issues(repo: Repository, since: datetime) -> list[Issue]:
     issues = []
     logger = logging.getLogger("GetIssues")
-    for issue in repo.get_issues(sort="created", direction="desc"):
+    for issue in repo.get_issues(sort="created", direction="desc", state="closed"):
         if issue.created_at < since:
             return issues
         logger.info(

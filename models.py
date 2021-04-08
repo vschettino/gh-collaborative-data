@@ -42,8 +42,6 @@ class User(BaseModel):
             login=user.login,
             url=user.url,
             location=user.location,
-            created_at=user.created_at,
-            updated_at=user.updated_at,
         )
         extra = UserRepository.from_gh_object(user, repo)
         if extra:
