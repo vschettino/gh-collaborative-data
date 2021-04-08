@@ -2,6 +2,7 @@ import logging
 import time
 
 from geopy import geocoders
+from retry import retry
 from rich.progress import track
 from tzwhere import tzwhere
 
@@ -16,6 +17,7 @@ w = tzwhere.tzwhere(forceTZ=True)
 session = sessionmaker(bind=engine)(autoflush=True)
 
 
+@retry(backoff=1.1, delay=120, max_delay=600)
 def get_coordinates(locl: str):
     try:
         location = g.geocode(query=locl)

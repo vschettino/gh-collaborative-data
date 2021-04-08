@@ -107,6 +107,7 @@ def dump(data):
 if __name__ == "__main__":
     start(
         [
+            "niklasf/python-chess",
             "tensorflow/tensorflow",
             "rails/rails",
             "clojure/clojure",

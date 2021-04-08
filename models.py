@@ -113,10 +113,12 @@ class Organization(BaseModel):
     name = Column(String)
 
     @classmethod
-    def from_gh_object(cls, repo):
+    def from_gh_object(cls, org):
+        if not org:
+            return
         return Organization(
-            id=repo.id,
-            name=repo.name,
+            id=org.id,
+            name=org.name,
         )
 
 
