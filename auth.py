@@ -11,6 +11,13 @@ def get_github_tokens() -> list:
     return token_string.split(",")
 
 
+TOKENS = get_github_tokens()
+
+
+def get_random_github_token():
+    return random.choice(TOKENS)
+
+
 def get_next_github_token(index: int) -> str:
     """
     Get the next token while there's still a new token. When the system requests more

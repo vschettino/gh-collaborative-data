@@ -13,7 +13,6 @@ from sqlalchemy.sql.expression import Insert
 from urllib3 import Retry
 
 import models as m
-from auth import get_next_github_token
 from db import engine
 from dump import (
     get_issues,
@@ -23,6 +22,7 @@ from dump import (
     get_pull_requests,
     get_pulls_comments,
 )
+from hacks import authenticate
 
 install()
 logging.basicConfig(
@@ -43,58 +43,50 @@ def prefix_inserts(insert, compiler, **kw):
     return compiler.visit_insert(insert, **kw)
 
 
-def log_rate_limit(logger, g):
-    remaining, total = g.rate_limiting
-    logger.warning(
-        f"Only {remaining} of {total} requests before the service start getting throttled"
-    )
-
-
 def start(projects: list, since: datetime):
     logger = logging.getLogger("Dump")
     logger.info(f"Start dumping {len(projects)} projects from {since.isoformat()}")
     params = []
     for worker in range(len(projects)):
-        params.append((projects[worker], since, get_next_github_token(worker)))
+        params.append((projects[worker], since))
     with Pool(len(projects)) as p:
         p.map(dump, params)
 
 
 def dump(data):
-    project, since, token = data
+    project, since = data
     logger = logging.getLogger("Dump:" + project)
 
     session = sessionmaker(bind=engine)(autoflush=True)
     retry_config = Retry(
         total=sys.maxsize, status_forcelist=(403, 429), backoff_factor=5
     )
-    g = Github(token, per_page=100, retry=retry_config)
+    g = Github(per_page=100, retry=retry_config)
+    # Ugliest hack I ever done in Python
+    g._Github__requester._Requester__authenticate = authenticate
+
     repo = get_project(g, project)
+
     session.add(m.Repository.from_gh_object(repo))
     session.commit()
 
     contributors = get_project_contributors(repo)
     session.add_all(m.User.from_gh_objects(contributors, repo))
-    log_rate_limit(logger, g)
     session.commit()
 
     pulls = get_pull_requests(repo, since)
     session.add_all(m.PullRequest.from_gh_objects(pulls, repo))
-    log_rate_limit(logger, g)
     session.commit()
 
     issues = get_issues(repo, since)
     session.add_all(m.Issue.from_gh_objects(issues, repo))
-    log_rate_limit(logger, g)
     session.commit()
 
     for issue, comments in get_issues_comments(issues):
         session.add_all(m.IssueComment.from_gh_objects(comments, issue))
-    log_rate_limit(logger, g)
 
     for pull, comments in get_pulls_comments(pulls):
         session.add_all(m.PullRequestComment.from_gh_objects(comments, pull))
-    log_rate_limit(logger, g)
 
     session.commit()
 
