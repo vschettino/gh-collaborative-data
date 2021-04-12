@@ -12,5 +12,5 @@ def authenticate(url, requestHeaders, parameters):
     Like that it is possible to parallelize dumps of a given project.
     """
     token = get_random_github_token()
-    logger.info(f"using token ***{token[-5:]}")
+    logger.info(f"request {url} using token ******{token[-5:]}")
     requestHeaders["Authorization"] = f"token {token}"

@@ -1,12 +1,6 @@
 import logging
 from datetime import datetime
 
-RETRY_DEFAULTS = {
-    "delay": 15,
-    "backoff": 1.1,
-    "max_delay": 120,
-}
-
 from github import (
     Github,
     Issue,
