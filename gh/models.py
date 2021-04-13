@@ -230,3 +230,16 @@ class PullRequestComment(BaseModel):
             pull_request_id=pull.id,
             user=User.from_gh_object(comment.user),
         )
+
+
+class Interaction(BaseModel):
+    """
+    Materialized view that gathers all types of interactions
+    """
+
+    __tablename__ = "interactions"
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    repository_id = Column(Integer, ForeignKey("repositories.id"), primary_key=True)
+    created_at = Column(DateTime)
+    type = Column(String)
+    url = Column(String)

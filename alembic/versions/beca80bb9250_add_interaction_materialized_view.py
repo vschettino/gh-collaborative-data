@@ -38,4 +38,4 @@ def upgrade():
 
 
 def downgrade():
-    pass
+    op.execute("DROP MATERIALIZED VIEW interactions")

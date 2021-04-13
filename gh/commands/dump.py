@@ -4,17 +4,14 @@ from datetime import datetime
 from multiprocessing import Pool
 
 from github import Github
-from rich.logging import RichHandler
-from rich.traceback import install
 from sqlalchemy.dialects.postgresql.dml import OnConflictDoNothing
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import Insert
 from urllib3 import Retry
 
-import models as m
-from db import engine
-from dump import (
+import gh.models as m
+from gh.commands.dump_helper import (
     get_issues,
     get_issues_comments,
     get_project,
@@ -22,15 +19,21 @@ from dump import (
     get_pull_requests,
     get_pulls_comments,
 )
-from hacks import authenticate
+from gh.db import engine
+from gh.hacks import authenticate
 
-install()
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(name)s] %(message)s",
-    datefmt="[%Y-%m-%d %H:%M:%S]",
-    handlers=[RichHandler(markup=True, rich_tracebacks=True)],
-)
+PROJECTS = [
+    "niklasf/python-chess",
+    "tensorflow/tensorflow",
+    "rails/rails",
+    "clojure/clojure",
+    "astropy/astropy",
+    "django/django",
+    "facebook/react",
+    "golang/go",
+    "kubernetes/kubernetes",
+]
+SINCE = datetime(2019, 1, 1)
 
 
 @compiles(Insert, "postgresql")
@@ -43,13 +46,13 @@ def prefix_inserts(insert, compiler, **kw):
     return compiler.visit_insert(insert, **kw)
 
 
-def start(projects: list, since: datetime):
+def start(*args, **kwargs):
     logger = logging.getLogger("Dump")
-    logger.info(f"Start dumping {len(projects)} projects from {since.isoformat()}")
+    logger.info(f"Start dumping {len(PROJECTS)} projects from {SINCE.isoformat()}")
     params = []
-    for worker in range(len(projects)):
-        params.append((projects[worker], since))
-    with Pool(len(projects)) as p:
+    for worker in range(len(PROJECTS)):
+        params.append((PROJECTS[worker], SINCE))
+    with Pool(len(PROJECTS)) as p:
         p.map(dump, params)
 
 
@@ -93,20 +96,3 @@ def dump(data):
     logger.info(f"dumped {len(contributors)} main contributors")
     logger.info(f"dumped {len(pulls)} PRs")
     logger.info(f"dumped {len(issues)} Issues")
-
-
-if __name__ == "__main__":
-    start(
-        [
-            "niklasf/python-chess",
-            "tensorflow/tensorflow",
-            "rails/rails",
-            "clojure/clojure",
-            "astropy/astropy",
-            "django/django",
-            "facebook/react",
-            "golang/go",
-            "kubernetes/kubernetes",
-        ],
-        since=datetime(2019, 1, 1),
-    )

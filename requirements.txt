@@ -7,3 +7,5 @@ sqlalchemy
 alembic
 geopy
 tzwhere
+pandas
+seaborn

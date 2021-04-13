@@ -1,6 +1,6 @@
 import logging
 
-from auth import get_random_github_token
+from gh.auth import get_random_github_token
 
 logger = logging.getLogger("Requester")
 logger.setLevel("DEBUG")
