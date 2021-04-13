@@ -23,5 +23,12 @@ services:
       - DATABASE_ADDRESS="db"
     volumes:
     - ./:/workspace:shared
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafanadata:/var/lib/grafana
 volumes:
   pgdata:
+  grafanadata:

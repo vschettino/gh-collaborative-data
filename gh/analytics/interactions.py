@@ -1,6 +1,8 @@
 import logging
 
+import matplotlib.pyplot as plt
 import pandas
+import seaborn as sns
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
@@ -24,4 +26,11 @@ def general_interactions(*args, **kwargs):
         .group_by(text("1,2,3"))
     )
     df = pandas.read_sql(interactions_per_week.statement, session.bind)
-    logger.info(df.head())
+    by_project = df.groupby(["project", "created_at"]).sum("total")
+    plt.figure(figsize=(15, 8))
+
+    plot = sns.relplot(
+        data=by_project, x="created_at", y="total", kind="line", hue="project"
+    )
+    plt.gcf().set_size_inches(11.7, 8.27)
+    plot.savefig("output/iter_by_project.png")
