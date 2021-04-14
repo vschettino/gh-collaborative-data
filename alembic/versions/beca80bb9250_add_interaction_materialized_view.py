@@ -30,9 +30,9 @@ def upgrade():
             from pull_request_comments prc
                      INNER JOIN pull_requests pr on pr.id = prc.pull_request_id
         UNION
-            select prc.url, prc.user_id, pr.repository_id, prc.created_at, 'Pull Request Comment'
-            from pull_request_comments prc
-                     INNER JOIN pull_requests pr on pr.id = prc.pull_request_id
+            select ic.url, ic.user_id, i.repository_id, ic.created_at, 'Issue Comment'
+            from issue_comments ic
+                     INNER JOIN issues i on i.id = ic.issue_id
         """
     )
 

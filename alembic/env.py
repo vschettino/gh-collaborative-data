@@ -4,8 +4,8 @@ from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-from auth import get_database_connection_string
-from db import engine
+from gh.auth import get_database_connection_string
+from gh.db import engine
 
 config = context.config
 
@@ -15,7 +15,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from models import Base
+from gh.models import Base
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
