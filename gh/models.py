@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 Base = declarative_base()
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 
 
 class BaseModel(Base):
@@ -30,7 +30,10 @@ class User(BaseModel):
     login = Column(String, unique=True)
     url = Column(String)
     location = Column(String)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
     utc_locale = Column(String)
+    country = Column(String, nullable=True, index=True)
     created_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)
 
@@ -243,3 +246,13 @@ class Interaction(BaseModel):
     created_at = Column(DateTime)
     type = Column(String)
     url = Column(String)
+
+
+class Token(BaseModel):
+    """
+    Personal Access Tokens (PAT) used to authenticate into GitHub API
+    """
+
+    __tablename__ = "tokens"
+    token = Column(String, primary_key=True)
+    email = Column(String, nullable=True)

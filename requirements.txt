@@ -9,3 +9,5 @@ geopy
 tzwhere
 pandas
 seaborn
+shapely
+requests

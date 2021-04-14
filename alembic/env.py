@@ -4,8 +4,7 @@ from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-from gh.auth import get_database_connection_string
-from gh.db import engine
+from gh.db import engine, get_database_connection_string
 
 config = context.config
 
