@@ -32,6 +32,10 @@ PROJECTS = [
     "facebook/react",
     "golang/go",
     "kubernetes/kubernetes",
+    "urfave/cli",
+    "grafana/grafana",
+    "hashicorp/vault",
+    "sqlalchemy/sqlalchemy",
 ]
 SINCE = datetime(2019, 1, 1)
 
