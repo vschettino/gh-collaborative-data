@@ -44,20 +44,31 @@ def get_countries() -> dict:
 
 def get_country(countries, lat, lon):
     point = Point(lon, lat)
-    for country, geom in countries.items():
-        if geom.contains(point):
-            return country
+    try:
+        for country, geom in countries.items():
+            if geom.contains(point):
+                return country
+    except Exception:
+        pass
+
+
+def get_utc_locale(lat, lgn):
+    w = tzwhere.tzwhere(forceTZ=True)
+    try:
+        return w.tzNameAt(lat, lgn, forceTZ=True)
+    except KeyError:
+        pass
 
 
 def load(*args, **kwargs):
     g = geocoders.Nominatim(user_agent="gh-collaborative-data", timeout=600)
     logger.info("Geocoder is ready")
-    w = tzwhere.tzwhere(forceTZ=True)
     session = sessionmaker(bind=engine)(autoflush=True)
     countries = get_countries()
     users = (
         session.query(User)
-        .filter(User.location != None and User.latitude != None)
+        .filter(User.location != None)
+        .filter(User.latitude == None)
         .all()
     )
     count_users = len(users)
@@ -72,7 +83,7 @@ def load(*args, **kwargs):
             continue
         user.latitude = lat
         user.longitude = lgn
-        utc_locale = w.tzNameAt(lat, lgn, forceTZ=True)
+        utc_locale = get_utc_locale(lat, lgn)
         if utc_locale:
             logger.info(f"UTC locale defined as {utc_locale}")
             user.utc_locale = utc_locale
