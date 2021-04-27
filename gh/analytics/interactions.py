@@ -68,19 +68,6 @@ contribution_hours = (
 )
 
 
-# weekly_interactions_per_week = """
-# SELECT date_trunc('week', i.created_at AT TIME ZONE u.utc_locale) as time,
-#          COUNT(*) filter (where extract(isodow from i.created_at AT TIME ZONE u.utc_locale) IN (1, 2)) / COUNT(*)::float
-# from interactions i
-#          INNER JOIN users u on i.user_id = u.id
-# WHERE u.utc_locale is not null
-#   AND u.utc_locale not like 'uninhabited'
-#   AND i.repository_id = '$project'
-# GROUP BY 1
-# ORDER BY 1
-# """
-
-
 def to_csv(data: List[Dict], filepath):
     keys = data[0].keys()
     with open(filepath, "w", newline="") as output_file:
