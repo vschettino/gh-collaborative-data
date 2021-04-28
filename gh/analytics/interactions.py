@@ -41,7 +41,7 @@ weekend_interactions_per_week = (
         ).label("created_at"),
         func.count("*").op("filter")(
             text(
-                "(where extract(isodow from interactions.created_at AT TIME ZONE utc_locale) IN (1, 2))::float"
+                "(where extract(isodow from interactions.created_at AT TIME ZONE utc_locale) IN (6, 7))::float"
             )
             / func.count("*")
         ),
